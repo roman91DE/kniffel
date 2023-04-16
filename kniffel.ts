@@ -12,7 +12,7 @@ type Dice = {
     fixed: boolean;
 }
 
-class Game {
+class Round {
     counter: number;
     dices: Dice[];
 
@@ -24,7 +24,7 @@ class Game {
         }
     }
 
-    __printGame() {
+    __printState__() {
         console.log("Round: " + this.counter);
         for (const iterator of this.dices) {
             console.log(`${iterator.value} - Fixed=${iterator.fixed}`);
@@ -32,31 +32,60 @@ class Game {
     }
 
     reroll(indices: boolean[]) {
+        if (!this.canReroll()) {
+            throw new Error(`Can't reroll - Counter reached ${this.counter}`);
+        }
+        this.counter++;
         indices.forEach((value, index) => {
             if (value == true) {
                 if (this.dices[index].fixed == false) {
                     this.dices[index].value = rollDice();
                 } else {
-                    throw new Error(`Can't reroll at index ${index} - Dice is fixed`);
+                    throw new Error(`Can't reroll dice at index ${index} - Fixed dice`);
                 }
             }
             else {
                 this.dices[index].fixed = true;
             }
-            this.counter++;
         });
     }
     canReroll(): boolean {
         return this.counter < 2;
     }
-
 }
 
-function main() {
-    let game = new Game();
-    game.__printGame();
-    game.reroll([true, false, false, false, false]);
-    game.__printGame();
-    game.reroll([false, true, false, false, false]);
-    game.__printGame();
+const partial = (func, ...args) => (...rest) => func(...args, ...rest);
+
+
+function countValOnly(val: number, dices: Dice[]) : number  {
+    return dices.filter((dice) => dice.value == val).map((dice) => dice.value).reduce((a, b) => a + b, 0);
 }
+
+
+const ScoringBoard = {
+    ones: partial(countValOnly, 1),
+    twos: partial(countValOnly, 2),
+    threes: partial(countValOnly, 3),
+    fours: partial(countValOnly, 4),
+    fives: partial(countValOnly, 5),
+    sixes: partial(countValOnly, 6),
+    threeOfAKind: 0,
+    fourOfAKind: 0,
+    fullHouse: 0,
+    smallStraight: 0,
+    largeStraight: 0,
+    chance: 0,
+    yahtzee: 0,
+}
+
+function test_round() {
+    let round = new Round();
+    round.__printState__();
+    round.reroll([true, false, false, false, false]);
+    round.__printState__();
+    round.reroll([true, false, false, false, false]);
+    round.__printState__();
+    round.reroll([true, false, false, false, false]);
+}
+
+test();
