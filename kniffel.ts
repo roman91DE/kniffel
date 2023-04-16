@@ -88,4 +88,4 @@ function test_round() {
     round.reroll([true, false, false, false, false]);
 }
 
-test();
+test_round();
