@@ -138,7 +138,7 @@ class Game {
         });
     }
     canReroll(): boolean {
-        return this.counter < 2;
+        return this.counter < 3;
     }
     getScore(choice: string): number {
         if (this.scoringBoard[choice]["available"] == false) {
@@ -156,36 +156,60 @@ class Game {
         console.log("displayDices() called")
         const outputTagIDS = ["dice1", "dice2", "dice3", "dice4", "dice5"];
         for (let i = 0; i < 5; i++) {
-            let tag = <HTMLInputElement | null>document.getElementById(outputTagIDS[i])
-            // console.log("tag: " + tag)
+            const tag = <HTMLInputElement | null>document.getElementById(outputTagIDS[i])
             if (tag == null) {
-                // console.log("Did not find tag with id " + outputTagIDS[i])
+                console.log("Did not find tag with id " + outputTagIDS[i])
                 throw new Error(`Can't find tag with id ${outputTagIDS[i]}`);
             }
-            console.log("Did find tag with id " + outputTagIDS[i]);
-            console.log("this.dices[i].value: " + this.dices[i].value.toString());
-            document.getElementById(outputTagIDS[i]).innerHTML = this.dices[i].value.toString();
+            tag.innerHTML = this.dices[i].value.toString();
         }
+    }
+    getDiceIndices(): boolean[] {
+        const indices = [false, false, false, false, false];
+        for (let i = 0; i < 5; i++) {
+            const tag = <HTMLInputElement | null>document.getElementById(`checkbox${i+1}`)
+            if (tag == null) {
+                console.log("Did not find tag with id " + `checkbox${i+1}`);
+                throw new Error(`Can't find tag with id ${`checkbox${i+1}`}`);
+            } else {
+                if (tag.checked) {
+                    indices[i] = true;
+                }
+            }
+        }
+        return indices;
 
+    }
+
+    setDiceCheckboxState() {
+        const checkboxTagIDS = ["checkbox1", "checkbox2", "checkbox3", "checkbox4", "checkbox5"];
+        for (let i = 0; i < 5; i++) {
+            const tag = <HTMLInputElement | null>document.getElementById(checkboxTagIDS[i])
+            if (tag == null) {
+                console.log("Did not find tag with id " + checkboxTagIDS[i])
+                throw new Error(`Can't find tag with id ${checkboxTagIDS[i]}`);
+            }
+            if (this.dices[i].fixed) {
+                tag.disabled = true;
+            } else {
+                tag.disabled = false;
+            }
+        }
+    }
+
+    clickedRollButton() {
+        if (this.counter == 0) {
+            this.displayDices();
+            this.counter++;
+        } else {
+            if (this.canReroll()) {
+                this.reroll(this.getDiceIndices());
+                this.displayDices();
+            }
+        }
+        this.setDiceCheckboxState();
     }
 }
 
 
 let game = new Game();
-
-
-
-
-// function test_round() {
-//     const target = "chance"
-//     let round = new Round();
-//     round.__printState__();
-//     console.log(`Score for ${target}: ${round.getScore(target)}`);
-//     //     round.reroll([true, true, true, true, true]);
-//     //     round.__printState__();
-//     //     console.log(`Score for ${target}: ${round.getScore(target)}`);
-//     //     round.reroll([true, true, true, true, true]);
-//     //     round.__printState__();
-//     //     console.log(`Score for ${target}: ${round.getScore(target)}`);
-// }
-
