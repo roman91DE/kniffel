@@ -12,11 +12,11 @@ type Dice = {
     fixed: boolean;
 }
 
-function countValOnly(val: number, dices: Dice[]) : number  {
+function countValOnly(val: number, dices: Dice[]): number {
     return dices.filter((dice) => dice.value == val).map((dice) => dice.value).reduce((a, b) => a + b, 0);
 }
 
-function countPairs(minNumMatches: number, dices: Dice[]) : number {
+function countPairs(minNumMatches: number, dices: Dice[]): number {
     // check if a dices.value is at least minMatch times inside the dices array
     let valid_choice = false;
     for (let i = 1; i <= 6; i++) {
@@ -36,69 +36,72 @@ function countPairs(minNumMatches: number, dices: Dice[]) : number {
     }
 }
 
-function countAll(dices: Dice[]) : number {
+function countAll(dices: Dice[]): number {
     return dices.map((dice) => dice.value).reduce((a, b) => a + b, 0);
 }
 
-const ScoringBoard = {
-    ones: {
-        evaluationFunction : countValOnly,
-        args : [1],
-        available: true,
-    },
-    twos: {
-        evaluationFunction : countValOnly,
-        args : [2],
-        available: true,
-    },
-    threes: {
-        evaluationFunction : countValOnly,
-        args : [3],
-        available: true,
-    },
-    fours: {
-        evaluationFunction : countValOnly,
-        args : [4],
-        available: true,
-    },
-    fives: {
-        evaluationFunction : countValOnly,
-        args : [5],
-        available: true,
-    },
-    sixes: {
-        evaluationFunction : countValOnly,
-        args : [6],
-        available: true,
-    },
-    threeOfAKind: {
-        evaluationFunction : countPairs,
-        args : [3],
-        available: true,
-    },
-    fourOfAKind: {
-        evaluationFunction : countPairs,
-        args : [4],
-        available: true,
-    },
-    // fullHouse: 0,
-    // smallStraight: 0,
-    // largeStraight: 0,
-    chance: {
-        evaluationFunction : countAll,
-        args : [],
-        available: true,
-    },
-    yahtzee: {
-        evaluationFunction : countPairs,
-        args : [5],
-        available: true,
-    },
+function makeScoringBoard(): Object {
+    return {
+        ones: {
+            evaluationFunction: countValOnly,
+            args: [1],
+            available: true,
+        },
+        twos: {
+            evaluationFunction: countValOnly,
+            args: [2],
+            available: true,
+        },
+        threes: {
+            evaluationFunction: countValOnly,
+            args: [3],
+            available: true,
+        },
+        fours: {
+            evaluationFunction: countValOnly,
+            args: [4],
+            available: true,
+        },
+        fives: {
+            evaluationFunction: countValOnly,
+            args: [5],
+            available: true,
+        },
+        sixes: {
+            evaluationFunction: countValOnly,
+            args: [6],
+            available: true,
+        },
+        threeOfAKind: {
+            evaluationFunction: countPairs,
+            args: [3],
+            available: true,
+        },
+        fourOfAKind: {
+            evaluationFunction: countPairs,
+            args: [4],
+            available: true,
+        },
+        // fullHouse: 0,
+        // smallStraight: 0,
+        // largeStraight: 0,
+        chance: {
+            evaluationFunction: countAll,
+            args: [],
+            available: true,
+        },
+        yahtzee: {
+            evaluationFunction: countPairs,
+            args: [5],
+            available: true,
+        },
+    }
 }
 
-class Round {
+class Game {
     counter: number;
     dices: Dice[];
+    scoringBoard: Object;
 
     constructor() {
         this.counter = 0;
@@ -106,6 +109,7 @@ class Round {
         for (let i = 0; i < 5; i++) {
             this.dices.push({ value: rollDice(), fixed: false });
         }
+        this.scoringBoard = makeScoringBoard();
     }
 
     __printState__() {
@@ -137,39 +141,51 @@ class Round {
         return this.counter < 2;
     }
     getScore(choice: string): number {
-        if (ScoringBoard[choice]["available"] == false) {
+        if (this.scoringBoard[choice]["available"] == false) {
             throw new Error(`Can't get score for ${choice} - Already used`);
         }
-        ScoringBoard[choice]["available"] = false;
-        if (ScoringBoard[choice]["args"].length == 0) {
+        this.scoringBoard[choice]["available"] = false;
+        if (this.scoringBoard[choice]["args"].length == 0) {
             // evaluation function has no arguments
-            return ScoringBoard[choice]["evaluationFunction"](this.dices);
+            return this.scoringBoard[choice]["evaluationFunction"](this.dices);
         } else {
-            return ScoringBoard[choice]["evaluationFunction"](ScoringBoard[choice]["args"][0],this.dices);
+            return this.scoringBoard[choice]["evaluationFunction"](this.scoringBoard[choice]["args"][0], this.dices);
         }
+    }
+    displayDices() {
+        console.log("displayDices() called")
+        const outputTagIDS = ["dice1", "dice2", "dice3", "dice4", "dice5"];
+        for (let i = 0; i < 5; i++) {
+            let tag = <HTMLInputElement | null>document.getElementById(outputTagIDS[i])
+            // console.log("tag: " + tag)
+            if (tag == null) {
+                // console.log("Did not find tag with id " + outputTagIDS[i])
+                throw new Error(`Can't find tag with id ${outputTagIDS[i]}`);
+            }
+            console.log("Did find tag with id " + outputTagIDS[i]);
+            console.log("this.dices[i].value: " + this.dices[i].value.toString());
+            document.getElementById(outputTagIDS[i]).innerHTML = this.dices[i].value.toString();
+        }
+
     }
 }
 
 
-
-function main() {
-    
-}
+let game = new Game();
 
 
 
 
-function test_round() {
-    const target = "chance"
-    let round = new Round();
-    round.__printState__();
-    console.log(`Score for ${target}: ${round.getScore(target)}`);
-//     round.reroll([true, true, true, true, true]);
+// function test_round() {
+//     const target = "chance"
+//     let round = new Round();
 //     round.__printState__();
 //     console.log(`Score for ${target}: ${round.getScore(target)}`);
-//     round.reroll([true, true, true, true, true]);
-//     round.__printState__();
-//     console.log(`Score for ${target}: ${round.getScore(target)}`);
-}
+//     //     round.reroll([true, true, true, true, true]);
+//     //     round.__printState__();
+//     //     console.log(`Score for ${target}: ${round.getScore(target)}`);
+//     //     round.reroll([true, true, true, true, true]);
+//     //     round.__printState__();
+//     //     console.log(`Score for ${target}: ${round.getScore(target)}`);
+// }
 
-test_round();

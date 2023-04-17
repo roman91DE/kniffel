@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
 
+PORT=8080
+
 npx tsc *.ts
 node *.js
+
+python3 -m http.server $PORT &
+
+open http://localhost:$PORT
+
+echo "Press any key to exit"
+read BUFFER
+
+ps | grep -m1 "python3 -m http.server $PORT" |  awk '{print $1}' | xargs kill

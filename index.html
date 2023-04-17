@@ -12,21 +12,13 @@
     <h1>Play Yahtzee!!!</h1>
     <p>Dices</p>
 
-    <!-- create a table of 2 rows and six columns -->
-    <!-- the first row displays a row of six output fields -->
-    <!-- each field should be named d1, d2, d3, d4, d5, d6 -->
-    <!-- the second row displays a row of six checkboxes -->
-    <!-- each checkbox should be named b1, b2, b3, b4, b5, b6 -->
-    <!-- the checkboxes should be unchecked by default -->
-
     <table id="dices">
         <tr>
-            <td><input type="text" name="d1" id="d1" value="0" readonly></td>
-            <td><input type="text" name="d2" id="d2" value="0" readonly></td>
-            <td><input type="text" name="d3" id="d3" value="0" readonly></td>
-            <td><input type="text" name="d4" id="d4" value="0" readonly></td>
-            <td><input type="text" name="d5" id="d5" value="0" readonly></td>
-            <td><input type="text" name="d6" id="d6" value="0" readonly></td>
+            <td><input type="text" name="d1" id="dice1" value="0" readonly></td>
+            <td><input type="text" name="d2" id="dice2" value="0" readonly></td>
+            <td><input type="text" name="d3" id="dice3" value="0" readonly></td>
+            <td><input type="text" name="d4" id="dice4" value="0" readonly></td>
+            <td><input type="text" name="d5" id="dice5" value="0" readonly></td>
         </tr>
         <tr>
             <td><input type="checkbox" name="b1" id="b1"></td>
@@ -34,7 +26,6 @@
             <td><input type="checkbox" name="b3" id="b3"></td>
             <td><input type="checkbox" name="b4" id="b4"></td>
             <td><input type="checkbox" name="b5" id="b5"></td>
-            <td><input type="checkbox" name="b6" id="b6"></td>
         </tr>
 
 
@@ -44,7 +35,7 @@
     <!-- display a button named "Roll" -->
 
     <div id="roll">
-        <button type="button" onclick="roll()">Roll</button>
+        <button type="button" onclick="game.displayDices()">Roll</button>
     </div>
 
 
