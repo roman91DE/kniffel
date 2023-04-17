@@ -212,4 +212,6 @@ class Game {
 }
 
 
-let game = new Game();
+// instantiate the main object
+const game = new Game();
+

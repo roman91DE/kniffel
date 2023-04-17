@@ -204,7 +204,6 @@ var Game = /** @class */ (function () {
     };
     return Game;
 }());
-var game = new Game();
-for (var attr in game.scoringBoard) {
-    console.log(attr);
-}
+document.onload = function () {
+    var game = new Game();
+};
